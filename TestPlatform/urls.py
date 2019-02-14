@@ -1,3 +1,4 @@
+# coding:utf-8
 """TestPlatform URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -20,6 +21,11 @@ from echarts.views import showcase
 # from echarts.views import echarts2
 from echarts.views import jQuery_get
 from echarts.views import jQuery_post
+from echarts.views import case_info
+from echarts.views import caseInfo
+# 用于生成接口文档
+from rest_framework.documentation import include_docs_urls
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -28,4 +34,8 @@ urlpatterns = [
     url(r'^jQuery_post/', jQuery_post),
     # url(r'^echarts2/', echarts2),
     url(r'^showcase/', showcase),
+    url(r'^caseInfo/', case_info),
+    url(r'^caseInfoPost', caseInfo.as_view()),
+    url(r'^caseInfoGet', caseInfo.as_view()),
+    url(r'docs/', include_docs_urls(title="guchen")),
 ]

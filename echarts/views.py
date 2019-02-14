@@ -3,6 +3,11 @@ from __future__ import unicode_literals
 import json
 from django.shortcuts import render
 import pymysql
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from django.http import HttpResponse
+from rest_framework.decorators import api_view, throttle_classes
+
 # Create your views here.
 
 
@@ -73,3 +78,52 @@ def showcase(request):
 
 
 # showcase()
+
+def case_info(requset):
+
+    return JsonResponse({"code": 200, "msg": "success"})
+
+
+# 用djangorestframework创建post接口时需要继承APIView
+class caseInfo(APIView):
+
+    # 这里必须写请求方式post、get等
+    def post(self, requset):
+
+        userCaseInfoId = requset.POST['userCaseInfoId']
+        db = pymysql.connect("localhost", "root", "guchen", "guchen_test", charset='utf8')
+        cursor = db.cursor()
+        sql = "select * from userCaseInfo where id= %s" % userCaseInfoId
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        r=list(results[0])
+        print r
+        return JsonResponse({"msg": "success","code": 200,
+                             'data':{'id':r[0],'name':r[1],'caseCount':r[2],'passCount':r[3],'failCount':r[4]}},
+                            content_type="application/json,charset=utf-8")
+
+    def get(self,request):
+        '''
+        前台访问caseInfoGet接口时调用该方法
+        :param request:
+        :return: 返回一个json对象，包含用例信息
+        '''
+
+        userCaseInfoId = request.GET['userCaseInfoId']
+        db = pymysql.connect('localhost','root','guchen','guchen_test',charset='utf8')
+        cursor = db.cursor()
+        sql = "select * from userCaseInfo where id=%s" % userCaseInfoId
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        r = list(results[0])
+        return JsonResponse({
+            'code':200,
+            'message':'success',
+            'data':{
+                'id': r[0],
+                'name': r[1],
+                'caseCount': r[2],
+                'passCount': r[3],
+                'failCount': r[4]}
+        })
+
